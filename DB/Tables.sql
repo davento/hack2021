@@ -74,6 +74,8 @@ CREATE TABLE paper(
     based_on text,
     pusblisher text,
     pubd date,
+    pdf bytea,
+    link    text,
     CONSTRAINT fk_ptn FOREIGN KEY (tag) REFERENCES tag(name),
     CONSTRAINT fk_pan FOREIGN KEY (author) REFERENCES author(name),
     CONSTRAINT fk_ppt FOREIGN KEY (based_on) REFERENCES paper(title)
