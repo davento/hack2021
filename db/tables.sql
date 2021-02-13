@@ -20,16 +20,16 @@ CREATE TABLE r_user_speciality(
     CONSTRAINT fk_st FOREIGN KEY (title) REFERENCES speciality(title)
 );
 
-drop table if exists achivement;
+drop table if exists achievement;
 CREATE TABLE achivement(
     title   text PRIMARY KEY,
     document bytea not NULL
 );
 
-drop table if exists r_user_achivemet;
+drop table if exists r_user_achievement;
 CREATE TABLE r_user_achivemet(
     username text,
-    title   text,
+    title text,
     CONSTRAINT pk_rua PRIMARY KEY (username, title),
     CONSTRAINT fk_rufn FOREIGN KEY (username) REFERENCES my_user(username),
     CONSTRAINT fk_rat FOREIGN KEY (title) REFERENCES achivement(title)
