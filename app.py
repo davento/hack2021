@@ -44,21 +44,24 @@ class r_user_speciality_model(db.Model):
         self.title = title
 
     def __repr__(self):
-        return f"<r_user_specialty {self.username, self.title}>"
+        return f"<r_user_specialty {self.username}, {self.title}>"
 
-class achivement(db.Model):
+class achivement_model(db.Model):
     __tablename__ = 'r_user_achivement'
-    username = db.Column(db.Text(), primary_key=True)
+    title = db.Column(db.Text(), primary_key=True)
     document = db.Column(db.LargeBinary())
 
-    def __init__(self, username, document):
-        self.username = username
+    def __init__(self, title, document):
+        self.title = title
         self.document = document
     
     def __repr__(self):
-        return f"<achivement {username}>"
+        return f"<achivement {title}>"
 
-class r_user_achievement():
+class r_user_achievement_model():
+    __tablename__ = 'r_user_achievement'
+    username = db.Column(db.Text(), primary_key=True)
+    title = db.Column(db.Text(), primary_key=True)
 
 @app.route('/')
 def index():
