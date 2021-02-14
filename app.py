@@ -59,7 +59,7 @@ def publish():
             return Response(msg, status=201)
 
 @app.route('/get10Paper', methods = ['GET'])
-def paper():
+def get10Paper():
     msg = []
     try:
         connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
@@ -83,6 +83,47 @@ def paper():
             cursor.close()
             connection.close()
             resp = json.dumps(msg)
+            return Response(resp, status=200)
+
+
+@app.route('/user', methods = ['GET'])
+def user():
+    username = request.args.get('content')
+    obj = {}
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = "SELECT * FROM my_user WHERE username = '%s'"
+        cursor.execute(query, username)
+        record = cursor.fetchall()
+        for row in record:
+            obj['firstname'] = row[0]
+            obj['lastname'] = row[1]
+            obj['username'] = row[2]
+
+        query = "SELECT title FROM r_user_speciality WHERE username = '%s'"
+        cursor.execute(query, username)
+        record = cursor.fetchall()
+        obj['specialties'] = []
+        for speciality in record:
+            obj['specialties'].append(speciality[0])
+
+        query = "SELECT title FROM r_user_achievement WHERE username = '%s'"
+        cursor.execute(query, username)
+        record = cursor.fetchall()
+        obj['achievements'] = []
+        for achievement in record:
+            obj['achievements'].append(achievement[0])
+
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Cannot get papers'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            resp = json.dumps(obj)
             return Response(resp, status=200)
 
 
