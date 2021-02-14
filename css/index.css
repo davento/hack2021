@@ -201,6 +201,10 @@ h1 {
 	margin-left: 10px
   }
 
+p {
+	font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
 .recommendations {
 	padding: 10px 0px;	
 }
@@ -253,21 +257,33 @@ h1 {
 	flex: 1 0 51%;
 }
 
-.bookmarks {
-	padding: 10px 0px;	
+.username {
+
 }
 
-.bookmarksContainer {
+.specialty {
+
+}
+
+.achievements {
+
+}
+
+.paperContainer {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-content: center;
 }
 
-.bookmarksItem {
-	background: rgba(76, 92, 104);
-	color: rgba(237,242,244);
-	flex: 1 0 51%;
+.paperItem {
+
+}
+
+
+
+#comment {
+
 }
 
 footer {
