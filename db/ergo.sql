@@ -1,3 +1,5 @@
+CREATE DATABASE ergo;
+
 drop table if exists my_user;
 CREATE TABLE my_user (
     firstname   text not NULL,
@@ -27,7 +29,7 @@ CREATE TABLE achivement(
 );
 
 drop table if exists r_user_achievement;
-CREATE TABLE r_user_achivemet(
+CREATE TABLE r_user_achivement(
     username text,
     title text,
     CONSTRAINT pk_rua PRIMARY KEY (username, title),
@@ -42,6 +44,10 @@ CREATE TABLE dpoint(
     thecontent text not NULL,
     participation   int not NULL,
     totalscore  int not NULL,
+    user    text,
+    paper    text,
+    CONSTRAINT fk_dpp FOREIGN KEY (paper) REFERENCES paper(title),
+    CONSTRAINT fk_dpu FOREIGN KEY (user) REFERENCES my_user(username),
     CONSTRAINT u_id_fid UNIQUE (id,fid),
     CHECK   (id <> fid)
 );
@@ -66,15 +72,29 @@ CREATE TABLE author(
     name    text PRIMARY KEY
 );
 
+drop table if exists r_tag_paper;
+CREATE TABLE r_tag_paper(
+    name    text,
+    paper   text,
+    CONSTRAINT pk_rtp PRIMARY KEY (name, paper),
+    CONSTRAINT fk_ptp FOREIGN KEY (paper) REFERENCES paper(title),
+    CONSTRAINT fk_ntp FOREIGN KEY (name) REFERENCES tag(name)
+);
+
+drop table if exists r_author_paper;
+CREATE TABLE r_author_paper(
+    name    text,
+    paper   text,
+    CONSTRAINT pk_rap PRIMARY KEY (name, paper),
+    CONSTRAINT fk_pap FOREIGN KEY (paper) REFERENCES paper(title),
+    CONSTRAINT fk_nap FOREIGN KEY (name) REFERENCES author(name)
+);
+
 drop table if exists paper;
 CREATE TABLE paper(
     title text PRIMARY KEY,
-    tag text,
-    author text,
-    based_on text,
     pusblisher text,
     pubd date,
-    pdf bytea,
     link    text,
     CONSTRAINT fk_ptn FOREIGN KEY (tag) REFERENCES tag(name),
     CONSTRAINT fk_pan FOREIGN KEY (author) REFERENCES author(name),
