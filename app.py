@@ -4,6 +4,9 @@ import json
 
 app = Flask(__name__)
 
+@app.route('/static/<content>')
+def static_content(content):
+    return render_template(content)
 
 
 @app.route('/register')
@@ -18,9 +21,7 @@ def register():
         query = """INSERT INTO my_user VALUES (%s, %s, %s, %s);"""
         values = (firstname, lastname, username, password)
         cursor.execute(query, values)
-
         connection.commit()
-        count = cursor.rowcount
     except (Exception, psycopg2.Error) as error:
         if (connection):
             msg = json.dumps({'message': 'User cannot not be created'})
@@ -42,20 +43,19 @@ def publish():
     try:
         connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
         cursor = connection.cursor()
-        query = """INSERT INTO  VALUES (DEFAULT, %s, %s, DEFAULT, DEFAULT, %s, %s);"""
-        values = (str(record[0][0] + 1), content, username, paperTitle)
+        query = """INSERT INTO paper VALUES (%s, %s, %s, %s);"""
+        values = (title, publisher, date, link)
         cursor.execute(query, values)
         connection.commit()
-        count = cursor.rowcount
     except (Exception, psycopg2.Error) as error:
         if (connection):
-            msg = json.dumps({'message': 'Discussion cannot not be created'})
+            msg = json.dumps({'message': 'Paper reference cannot not be created'})
             return Response(msg, status=200)
     finally:
         if (connection):
             cursor.close()
             connection.close()
-            msg = json.dumps({'message': 'Discussion created'})
+            msg = json.dumps({'message': 'Paper reference created'})
             return Response(msg, status=201)
 
 
@@ -73,7 +73,6 @@ def createDiscussion():
         values = (str(record[0][0] + 1), content, username, paperTitle)
         cursor.execute(query, values)
         connection.commit()
-        count = cursor.rowcount
     except (Exception, psycopg2.Error) as error:
         if (connection):
             msg = json.dumps({'message': 'Discussion cannot not be created'})
@@ -86,9 +85,31 @@ def createDiscussion():
             return Response(msg, status=201)
 
 
-@app.route('/')
-def index():
-    return 'We can do it'
+@app.route('/createSubdiscussion')
+def createSubdiscussion():
+    fid = request.args.get('fid')
+    content = request.args.get('content')
+    username = request.args.get('username') 
+    paperTitle = request.args.get('paperTitle') 
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = """INSERT INTO dpoint VALUES (DEFAULT, %s, %s, DEFAULT, DEFAULT, %s, %s);"""
+        values = (fid, content, username, paperTitle)
+        cursor.execute(query, values)
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'subdiscussion cannot not be created'})
+            return Response(msg, status=200)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            msg = json.dumps({'message': 'Subdiscussion created'})
+            return Response(msg, status=201)
+
+
 
 if __name__ == '__main__':
     app.run()
