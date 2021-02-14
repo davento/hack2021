@@ -52,3 +52,18 @@ function    getUserInfo()
     });
 
 }
+
+function getBrowse()
+{
+    $.getJSON('/tags', function(data) {
+        console.log(data);
+		var i = 0;		
+		$.each(data, function() {
+            template = '<div class="browseItem"><span>tagname</span></div>';
+            template = template.replace('tagname', data[tags[row[i]]]);
+            $("#browseContainer").append(template);
+            i = i + 1;
+        });
+    }
+    )
+}
