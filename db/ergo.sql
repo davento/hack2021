@@ -75,7 +75,7 @@ CREATE TABLE author(
 drop table if exists paper cascade;
 CREATE TABLE paper(
     title text PRIMARY KEY,
-    pusblisher text,
+    publisher text,
     pubd date,
     link text,
 );

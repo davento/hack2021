@@ -9,7 +9,7 @@ def static_content(content):
     return render_template(content)
 
 
-@app.route('/register')
+@app.route('/register', methods = ['POST'])
 def register():
     firstname = request.args.get('firstname')
     lastname = request.args.get('lastname') 
@@ -25,7 +25,7 @@ def register():
     except (Exception, psycopg2.Error) as error:
         if (connection):
             msg = json.dumps({'message': 'User cannot not be created'})
-            return Response(msg, status=200)
+            return Response(msg, status=400)
     finally:
         if (connection):
             cursor.close()
@@ -34,7 +34,7 @@ def register():
             return Response(msg, status=201)
 
 
-@app.route('/publish')
+@app.route('/publish', methods = ['POST'])
 def publish():
     title = request.args.get('content')
     publisher = request.args.get('publisher')
@@ -50,7 +50,7 @@ def publish():
     except (Exception, psycopg2.Error) as error:
         if (connection):
             msg = json.dumps({'message': 'Paper reference cannot not be created'})
-            return Response(msg, status=200)
+            return Response(msg, status=400)
     finally:
         if (connection):
             cursor.close()
@@ -58,8 +58,35 @@ def publish():
             msg = json.dumps({'message': 'Paper reference created'})
             return Response(msg, status=201)
 
+@app.route('/get10Paper', methods = ['GET'])
+def paper():
+    msg = []
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = "SELECT * FROM papers"
+        cursor.execute(query)
+        record = cursor.fetchall()
+        for row in record:
+            obj = {}
+            obj['title'] = row[0]
+            obj['publisher'] = row[1]
+            obj['publicationDate'] = row[2]
+            obj['link'] = row[3]
+            msg.append(obj)
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Cannot get papers'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            resp = json.dumps(msg)
+            return Response(resp, status=200)
 
-@app.route('/createDiscussion')
+
+@app.route('/createDiscussion', methods = ['POST'])
 def createDiscussion():
     content = request.args.get('content')
     username = request.args.get('username') 
@@ -76,7 +103,7 @@ def createDiscussion():
     except (Exception, psycopg2.Error) as error:
         if (connection):
             msg = json.dumps({'message': 'Discussion cannot not be created'})
-            return Response(msg, status=200)
+            return Response(msg, status=400)
     finally:
         if (connection):
             cursor.close()
@@ -85,7 +112,7 @@ def createDiscussion():
             return Response(msg, status=201)
 
 
-@app.route('/createSubdiscussion')
+@app.route('/createSubdiscussion', methods = ['POST'])
 def createSubdiscussion():
     fid = request.args.get('fid')
     content = request.args.get('content')
@@ -101,14 +128,13 @@ def createSubdiscussion():
     except (Exception, psycopg2.Error) as error:
         if (connection):
             msg = json.dumps({'message': 'subdiscussion cannot not be created'})
-            return Response(msg, status=200)
+            return Response(msg, status=400)
     finally:
         if (connection):
             cursor.close()
             connection.close()
             msg = json.dumps({'message': 'Subdiscussion created'})
             return Response(msg, status=201)
-
 
 
 if __name__ == '__main__':
