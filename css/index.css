@@ -258,14 +258,23 @@ p {
 }
 
 .username {
+	font-family: Georgia, 'Times New Roman', Times, serif;
+	font-size: 5rem;
+}
+
+.specialtiesContainer {
 
 }
 
-.specialty {
+.specialtiesItem {
 
 }
 
-.achievements {
+.achievementsContainer {
+
+}
+
+.achievementsItem {
 
 }
 
