@@ -39,17 +39,17 @@ CREATE TABLE r_user_achievement(
 
 drop table if exists dpoint cascade;
 CREATE TABLE dpoint(
-    id int PRIMARY KEY,
+    id serial,
     fid int,
-    thecontent text not NULL,
-    participation   int not NULL,
-    totalscore  int not NULL,
-    username    text,
-    paper    text,
-    CONSTRAINT fk_dpp FOREIGN KEY (paper) REFERENCES paper(title),
+    content text not NULL,
+    participation int DEFAULT 0,
+    totalscore int DEFAULT 0,
+    username text,
+    paper_title text,
+    CONSTRAINT pk_dip PRIMARY KEY (id, paper_title),
+    CONSTRAINT fk_dpp FOREIGN KEY (paper_title) REFERENCES paper(title),
     CONSTRAINT fk_dpu FOREIGN KEY (username) REFERENCES my_user(username),
     CONSTRAINT u_id_fid UNIQUE (id,fid),
-    CHECK   (id <> fid)
 );
 
 drop table if exists comment cascade;
