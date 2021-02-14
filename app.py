@@ -54,7 +54,7 @@ class achivement(db.Model):
     def __init__(self, username, document):
         self.username = username
         self.document = document
-    
+
     def __repr__(self):
         return f"<achivement {username}>"
 
