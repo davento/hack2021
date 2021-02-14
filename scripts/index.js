@@ -4,7 +4,20 @@ function searchPaper() {
 
 function getRecommendations()
 {
-    getPaperInfo();
+    $.getJSON('/get10Paper', function(data) {
+        console.log(data);
+		var i = 0;		
+		$.each(data, function() {
+            template = '<div><h3><span>title</span></h3>Posted on: <span>date</span><p></p>Published by: <span>publisher</span></div>';
+            template = template.replace('title', data['title']);
+            template = template.replace('date', data['publicationDate']);
+            template = template.replace('publisher', data['publisher']);
+            template += '<button onclick ="paperRedirect("' + str(data['link']) + '")"></button>'
+            $("#paperInfo").append(template);
+            i = i + 1;
+        });
+    }
+    )
 }
 
 function getPaperInfo()
@@ -28,7 +41,7 @@ function paperRedirect(url) {
 
 function    getUserInfo()
 {
-    $.getJSON("/current_user", function (data) {
+    $.getJSON("/user", function (data) {
         console.log(data);
         template = '<div class="username"> <span>username</span> | <span>name</span>, <span>lastname</span></div><p></p>';
         template = template.replace('username', data['username']);
@@ -36,8 +49,6 @@ function    getUserInfo()
         template = template.replace('lastname', data['lastname']);
         console.log(template);
         $("#userInfo").append(template);
-        getAchievements(data);
-        //getSpecialities(data);
     });
 
 }

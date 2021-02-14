@@ -58,13 +58,40 @@ def publish():
             msg = json.dumps({'message': 'Paper reference created'})
             return Response(msg, status=201)
 
+@app.route('/getPaper', methods = ['GET'])
+def getPaper():
+    msg = []
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = "SELECT * FROM papers LIMIT 1"
+        cursor.execute(query)
+        record = cursor.fetchall()
+        for row in record:
+            obj = {}
+            obj['title'] = row[0]
+            obj['publisher'] = row[1]
+            obj['publicationDate'] = row[2]
+            obj['link'] = row[3]
+            msg.append(obj)
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Cannot get papers'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            resp = json.dumps(msg)
+            return Response(resp, status=200)
+
 @app.route('/get10Paper', methods = ['GET'])
 def get10Paper():
     msg = []
     try:
         connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
         cursor = connection.cursor()
-        query = "SELECT * FROM papers"
+        query = "SELECT * FROM papers LIMIT 10"
         cursor.execute(query)
         record = cursor.fetchall()
         for row in record:
@@ -117,7 +144,7 @@ def user():
 
     except (Exception, psycopg2.Error) as error:
         if (connection):
-            msg = json.dumps({'message': 'Cannot get papers'})
+            msg = json.dumps({'message': 'Cannot get user'})
             return Response(msg, status=400)
     finally:
         if (connection):
