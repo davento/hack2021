@@ -64,7 +64,7 @@ def get10Paper():
     try:
         connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
         cursor = connection.cursor()
-        query = "SELECT * FROM papers"
+        query = "SELECT * FROM papers LIMIT 10"
         cursor.execute(query)
         record = cursor.fetchall()
         for row in record:
