@@ -86,6 +86,31 @@ def get10Paper():
             return Response(resp, status=200)
 
 
+@app.route('/tags', methods = ['GET'])
+def user():
+    tags = {}
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = "SELECT * FROM r_tag_paper"
+        cursor.execute(query)
+        record = cursor.fetchall()
+        for row in record:
+            if not row[0] in dict.keys():
+                tags[row[0]] = []
+            tags[row[0]].append(row[1])
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Cannot get papers'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            resp = json.dumps(tags)
+            return Response(resp, status=200)
+
+
 @app.route('/user', methods = ['GET'])
 def user():
     username = request.args.get('content')
