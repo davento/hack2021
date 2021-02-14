@@ -1,68 +1,182 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, migrate
-from sqlalchemy import ForeignKey
+from flask import Flask, request, jsonify, render_template, Response
+import psycopg2
+import json
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']="postgresql://postgres:postgres@localhost:5432/hack2021"
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
-class my_user_model(db.Model):
-    __tablename__ = 'my_user'
-    firstname = db.Column(db.Text())
-    lastname = db.Column(db.Text())
-    username = db.Column(db.Text(), primary_key=True)
-    password = db.Column(db.Text())
+@app.route('/static/<content>')
+def static_content(content):
+    return render_template(content)
 
-    def __init__(self, firstname, lastname, username, password):
-        self.firstname = firstname
-        self.lastname = lastname
-        self.username = username
-        self.password = password
 
-    def __repr__(self):
-        return f"<User {self.username}>"
+@app.route('/register', methods = ['POST'])
+def register():
+    firstname = request.args.get('firstname')
+    lastname = request.args.get('lastname') 
+    username = request.args.get('username') 
+    password = request.args.get('password')
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = """INSERT INTO my_user VALUES (%s, %s, %s, %s);"""
+        values = (firstname, lastname, username, password)
+        cursor.execute(query, values)
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'User cannot not be created'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            msg = json.dumps({'message': 'User created'})
+            return Response(msg, status=201)
 
-class speciality_model(db.Model):
-    __tablename__ = 'specialty'
-    title = db.Column(db.Text(), primary_key=True)
 
-    def __init__(self, title):
-        self.title = title
+@app.route('/publish', methods = ['POST'])
+def publish():
+    title = request.args.get('content')
+    publisher = request.args.get('publisher')
+    date = request.args.get('date') 
+    link = request.args.get('link') 
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = """INSERT INTO paper VALUES (%s, %s, %s, %s);"""
+        values = (title, publisher, date, link)
+        cursor.execute(query, values)
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Paper reference cannot not be created'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            msg = json.dumps({'message': 'Paper reference created'})
+            return Response(msg, status=201)
 
-    def __repr__(self):
-        return f"<specialty {self.title}>"
+@app.route('/get10Paper', methods = ['GET'])
+def get10Paper():
+    msg = []
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = "SELECT * FROM papers"
+        cursor.execute(query)
+        record = cursor.fetchall()
+        for row in record:
+            obj = {}
+            obj['title'] = row[0]
+            obj['publisher'] = row[1]
+            obj['publicationDate'] = row[2]
+            obj['link'] = row[3]
+            msg.append(obj)
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Cannot get papers'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            resp = json.dumps(msg)
+            return Response(resp, status=200)
 
-class r_user_speciality_model(db.Model):
-    __tablename__ = 'r_user_specialty'
-    username = db.Column(db.Text(), primary_key=True, ForeignKey('my_user.username'))
-    title = db.Column(db.Text(), primary_key=True, ForeignKey('specialty.title'))
 
-    def __init__(self, username, title):
-        self.username = username
-        self.title = title
+@app.route('/user', methods = ['GET'])
+def user():
+    username = request.args.get('content')
+    obj = {}
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = "SELECT * FROM my_user WHERE username = '%s'"
+        cursor.execute(query, username)
+        record = cursor.fetchall()
+        for row in record:
+            obj['firstname'] = row[0]
+            obj['lastname'] = row[1]
+            obj['username'] = row[2]
 
-    def __repr__(self):
-        return f"<r_user_specialty {self.username, self.title}>"
+        query = "SELECT title FROM r_user_speciality WHERE username = '%s'"
+        cursor.execute(query, username)
+        record = cursor.fetchall()
+        obj['specialties'] = []
+        for speciality in record:
+            obj['specialties'].append(speciality[0])
 
-class achivement(db.Model):
-    __tablename__ = 'r_user_achivement'
-    username = db.Column(db.Text(), primary_key=True)
-    document = db.Column(db.LargeBinary())
+        query = "SELECT title FROM r_user_achievement WHERE username = '%s'"
+        cursor.execute(query, username)
+        record = cursor.fetchall()
+        obj['achievements'] = []
+        for achievement in record:
+            obj['achievements'].append(achievement[0])
 
-    def __init__(self, username, document):
-        self.username = username
-        self.document = document
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Cannot get papers'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            resp = json.dumps(obj)
+            return Response(resp, status=200)
 
-    def __repr__(self):
-        return f"<achivement {username}>"
 
-class r_user_achievement():
+@app.route('/createDiscussion', methods = ['POST'])
+def createDiscussion():
+    content = request.args.get('content')
+    username = request.args.get('username') 
+    paperTitle = request.args.get('paperTitle') 
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        cursor.execute("SELECT currval(pg_get_serial_sequence('dpoint', 'id'));")
+        record = cursor.fetchall()
+        query = """INSERT INTO dpoint VALUES (DEFAULT, %s, %s, DEFAULT, DEFAULT, %s, %s);"""
+        values = (str(record[0][0] + 1), content, username, paperTitle)
+        cursor.execute(query, values)
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'Discussion cannot not be created'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            msg = json.dumps({'message': 'Discussion created'})
+            return Response(msg, status=201)
 
-@app.route('/')
-def index():
-    return "Hello world"
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/createSubdiscussion', methods = ['POST'])
+def createSubdiscussion():
+    fid = request.args.get('fid')
+    content = request.args.get('content')
+    username = request.args.get('username') 
+    paperTitle = request.args.get('paperTitle') 
+    try:
+        connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
+        cursor = connection.cursor()
+        query = """INSERT INTO dpoint VALUES (DEFAULT, %s, %s, DEFAULT, DEFAULT, %s, %s);"""
+        values = (fid, content, username, paperTitle)
+        cursor.execute(query, values)
+        connection.commit()
+    except (Exception, psycopg2.Error) as error:
+        if (connection):
+            msg = json.dumps({'message': 'subdiscussion cannot not be created'})
+            return Response(msg, status=400)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            msg = json.dumps({'message': 'Subdiscussion created'})
+            return Response(msg, status=201)
+
+
+if __name__ == '__main__':
+    app.run()
