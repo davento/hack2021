@@ -87,7 +87,7 @@ def get10Paper():
 
 
 @app.route('/tags', methods = ['GET'])
-def user():
+def tags():
     tags = {}
     try:
         connection = psycopg2.connect(user="postgres", password="postgres", host="127.0.0.1", port="5432", database="ergo")
@@ -101,7 +101,7 @@ def user():
             tags[row[0]].append(row[1])
     except (Exception, psycopg2.Error) as error:
         if (connection):
-            msg = json.dumps({'message': 'Cannot get papers'})
+            msg = json.dumps({'message': 'Cannot get tags'})
             return Response(msg, status=400)
     finally:
         if (connection):
