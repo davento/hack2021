@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<title>Ergo</title>
+		<link rel="shortcut icon" type="image/ico" href="{{ url_for('static', filename='images/favicon.ico') }}"  />
+		<link rel="apple-touch-icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}"  />
+		<link rel="shortcut icon" sizes="192x192" type="image/png"  href="{{ url_for('static', filename='images/favicon.png') }}" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Welcome to Ergo, a portal that encourages scientific discussion for everyone, in attempts to bring together a scientific community.">
+	</head>
+	<body>
+		<header>
+			<section class="info-bar">
+			<div class="logo">
+				<img src="{{ url_for('static', filename='images/logo.png') }}" alt="ergologo" height="60 px">
+			</div>
+			<div class="navbar">
+			<input type="checkbox" id="nav-toggle" class="nav-toggle">
+			<nav>
+				<ul>
+					<li><a href="index.html" >home</a></li>
+					<li><a href="about.html">about</a></li>
+					<li><a href="trending.html">trending</a></li>
+					<li><a href="profile.html">profile</a></li>
+				</ul>
+			</nav>
+			<label for="nav-toggle" class="nav-toggle-label">
+			<span></span>
+			</label>
+			</div>
+		</header>
+
+		<div class="about" onload="">
+			<h1>About</h1>
+			<center>
+
+				<h2>Ergo: A portal for scientific discussion</h2>
+
+				Ergo is a platform that seeks to integrate the numerous but until now dispersed components of scientific discussion, doing so in a visual and intuitive manner. The vision of our project is to help build a society in which science culture is not a rare thing to have as everybody could present their points of view over a scientific topic in an informed way; nonetheless, being these same points also subjected to scrutiny and healthy debate. 
+				
+				In doing so, this site is going to be home to scientific research, where a body of papers is available for everyone to discuss either their implications, methodology, and even the scientific validity of the claims associated with the corresponding research, in the pertinent cases. The site will provide easy-to-understand tools to allow the user experience and even participate in often secluded processes such as peer-review and meta-analysis.
+				
+				First and foremost, the topics of discussion will be presented in two distinct interfaces, depending on the identity of the user. 
+				
+				If the user is a researcher, then a feed showing the latest trends of research and their corresponding papers will be presented. The researcher may also be able to publish his/her own research and to participate in the public discussion of the peer-review process of a new paper. He may also be able to moderate a discussion.
+				
+				If the user is a regular one (the largest part of the community), then the topics will be grouped by fields, such as Nutrition, Health, and Technology. Within each field, a group of claims is going to be presented, either as valid, invalid, or discussed. These claims are done by other regular users and will be grounded on a number of pertinent papers that justify the claim. Therefore anybody could enter the discussion and the subsequent papers in order to use parts of them as a ground for new claims in favor or in opposition.
+				
+				The interventions made by both users may be rewarded by a community rating, a system of points that depends on the number of positively voted claims and points of discussion you proposed.
+				
+				Secondly, the concept of threads of dialogue is going to be presented in a graphic display, where anybody could establish a point of discussion and everybody will be able to comment on it. At any point of the debate, someone can suggest a subpoint of discussion, which then the moderators will approve or reject. The debate will be resolved if a point of discussion gathers a sufficient amount of points against the counterpoint. This is done if the majority of subpoints of discussion are valid, which in turn is weighted according to the number of votes it receives and the moderators’ decision.
+				</center>
+		</div>
+
+		<footer></footer>
+	</body>
+</html>
